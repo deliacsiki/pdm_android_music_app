@@ -8,12 +8,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
-import com.example.pdm_android_music_app.R
-import com.example.pdm_android_music_app.core.TAG
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.fab
 import kotlinx.android.synthetic.main.fragment_item_list.*
+import com.example.pdm_android_music_app.R
+import com.example.pdm_android_music_app.auth.data.AuthRepository
+import com.example.pdm_android_music_app.core.Constants
+import com.example.pdm_android_music_app.core.TAG
 
 
 class ItemListFragment : Fragment() {
@@ -25,20 +26,34 @@ class ItemListFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        var token = Constants.instance()?.fetchValueString("token")
+        Log.v(TAG, "onCreateView -> $token")
         return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         Log.v(TAG, "onActivityCreated")
+        var token = Constants.instance()?.fetchValueString("token")
+        if (token == null) {
+            findNavController().navigate(R.id.fragment_login)
+            return;
+        }
+
         setupItemList()
+
         fab.setOnClickListener {
             Log.v(TAG, "add new item")
             findNavController().navigate(R.id.fragment_item_edit)
+        }
+
+        logout.setOnClickListener{
+            Log.v(TAG, "LOGOUT")
+            AuthRepository.logout()
+            findNavController().navigate(R.id.fragment_login)
         }
     }
 
@@ -61,7 +76,7 @@ class ItemListFragment : Fragment() {
                 Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
             }
         }
-        itemsModel.loadItems()
+        itemsModel.refresh()
     }
 
     override fun onDestroy() {

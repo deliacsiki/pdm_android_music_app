@@ -16,7 +16,7 @@ import com.example.pdm_android_music_app.item.ItemEditFragment
 import kotlinx.android.synthetic.main.view_item.view.*
 
 
-class ItemListAdapter (
+class ItemListAdapter(
     private val fragment: Fragment
 ) : RecyclerView.Adapter<ItemListAdapter.ViewHolder>() {
 
@@ -36,7 +36,7 @@ class ItemListAdapter (
         onItemClick = View.OnClickListener { view ->
             val item = view.tag as Song
             fragment.findNavController().navigate(R.id.fragment_item_edit, Bundle().apply {
-                putString(ItemEditFragment.ITEM_ID, item.id)
+                putString(ItemEditFragment.ITEM_ID, item._id)
             })
         }
     }
